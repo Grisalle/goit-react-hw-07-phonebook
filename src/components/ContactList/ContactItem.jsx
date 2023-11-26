@@ -1,6 +1,6 @@
 import { DeleteButton } from 'components/DeleteButton/DeleteButton';
 import { useDispatch } from 'react-redux';
-import { deleteUser } from 'redux/phone.reducer';
+import { fetchDeleteContact } from 'redux/phone.reducer';
 import css from './ContactItem.module.css';
 
 export const ContactItem = ({ contact }) => {
@@ -10,9 +10,11 @@ export const ContactItem = ({ contact }) => {
     <li className={css.contactItem} id={contact.id}>
       <p>
         <span className={css.userName}>{`${contact.name}: `}</span>
-        {`${contact.number}`}
+        {`${contact.phone}`}
       </p>
-      <DeleteButton handleDeleteUser={() => dispatch(deleteUser(contact.id))} />
+      <DeleteButton
+        handleDeleteUser={() => dispatch(fetchDeleteContact(contact.id))}
+      />
     </li>
   );
 };

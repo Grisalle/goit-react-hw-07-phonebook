@@ -1,71 +1,36 @@
-import { useState, useEffect } from 'react';
-import { nanoid } from 'nanoid';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Search } from './Search/Search';
+import { Loader } from './Loader/Loader';
+import { fetchAllContacts } from 'redux/phone.reducer';
+import { selectIsLoading, selectError } from 'redux/phone.selectors';
 import css from './App.module.css';
 
 export const App = () => {
-  const phoneBookContacts = [
-    { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-    { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-    { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-  ];
+  const dispatch = useDispatch();
 
-  const [contacts, setContacts] = useState(() => {
-    return (
-      JSON.parse(window.localStorage.getItem('contacts')) ?? phoneBookContacts
-    );
-  });
-  const [filter, setFilter] = useState('');
-
-  const handleDeleteUser = id => {
-    if (window.confirm('Are you sure?')) {
-      setContacts([...contacts.filter(user => user.id !== id)]);
-    }
-  };
-
-  const createUser = data => {
-    setContacts([
-      ...contacts,
-      { name: data.name, id: nanoid(), number: data.number },
-    ]);
-  };
-
-  const handlerSearch = e => {
-    setFilter(e.currentTarget.value);
-  };
+  const isLoading = useSelector(selectIsLoading);
+  const errorMessage = useSelector(selectError);
 
   useEffect(() => {
-    const savedContacts = JSON.parse(localStorage.getItem('contacts'));
-    if (savedContacts) {
-      setContacts(savedContacts);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+    dispatch(fetchAllContacts());
+  }, [dispatch]);
 
   return (
     <section className="section">
       <div className="container">
         <h1 className={css.title}>Phone book</h1>
-        <ContactForm
-          createUser={createUser}
-          userNumber={contacts.number}
-          userName={contacts.name}
-          contacts={contacts}
-        />
+        <ContactForm />
         <h2 className={css.contactsTitle}>Contacts</h2>
         <p className={css.search}>Find contacts by name</p>
-        <Search onChange={handlerSearch} value={filter} />
-        <ContactList
-          handleDeleteUser={handleDeleteUser}
-          contacts={contacts}
-          filter={filter}
-        />
+        <Search />
+        {isLoading && <Loader />}
+        {errorMessage && (
+          <div>Something went wrong. Error message: {errorMessage}</div>
+        )}
+        <ContactList />
       </div>
     </section>
   );

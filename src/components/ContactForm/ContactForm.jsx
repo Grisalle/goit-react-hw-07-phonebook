@@ -1,22 +1,23 @@
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import { useDispatch, useSelector } from 'react-redux';
-import { createNewUser } from 'redux/phone.reducer';
+import { fetchAddContact } from 'redux/phone.reducer';
+import { selectContacts } from 'redux/phone.selectors';
 import css from './ContactForm.module.css';
 
 export const ContactForm = () => {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
 
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.phoneStore.contacts);
+  const contacts = useSelector(selectContacts);
 
   const handleNameChange = event => {
     setName(event.target.value);
   };
 
   const handleNumberChange = event => {
-    setNumber(event.target.value);
+    setPhone(event.target.value);
   };
 
   const handleSubmit = event => {
@@ -24,7 +25,7 @@ export const ContactForm = () => {
 
     const contact = {
       name,
-      number,
+      phone,
     };
 
     if (
@@ -41,9 +42,10 @@ export const ContactForm = () => {
       id: nanoid(),
     };
 
-    dispatch(createNewUser(newContact));
+    dispatch(fetchAddContact(newContact));
     setName('');
-    setNumber('');
+    setPhone('');
+    event.target.lastElementChild.blur();
   };
 
   return (
@@ -67,7 +69,7 @@ export const ContactForm = () => {
         <input
           className={css.inputNumber}
           type="tel"
-          value={number}
+          value={phone}
           onChange={handleNumberChange}
           name="number"
           maxLength="13"
