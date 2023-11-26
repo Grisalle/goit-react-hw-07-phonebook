@@ -8,7 +8,6 @@ export const fetchAllContacts = createAsyncThunk(
       const { data } = await axios.get(
         `https://656387b3ee04015769a75857.mockapi.io/contacts/`
       );
-      console.log('data:', data);
       return data;
     } catch (err) {
       return thunkApi.rejectWithValue(err.message);
